@@ -1,0 +1,5 @@
+/docker-data
+/docker-data/*
+/.venv
+/.idea
+/.vscode
