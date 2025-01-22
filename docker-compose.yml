@@ -98,6 +98,26 @@ services:
       timeout: 5s
       retries: 3
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: mysql-server-pma
+    depends_on:
+      - mysql-server-1  # Or any of the MySQL servers
+    environment:
+      PMA_HOST: mysql-server-1  # Hostname of your MySQL server
+      PMA_PORT: "3306"        # Port of your MySQL server
+      PMA_ARBITRARY: 1
+
+    links:
+      - mysql-server-1
+      - mysql-server-2
+      - mysql-server-3
+
+    ports:
+      - 8089:80
+    networks:
+      - mysql-cluster
+
   mysql-router:
     image: mysql/mysql-router:8.0
     container_name: mysql-router
@@ -125,6 +145,7 @@ services:
       - mysqlrouter
     volumes:
       - ./docker-data/router:/var/lib/mysqlrouter
+
 
 networks:
   mysql-cluster:
