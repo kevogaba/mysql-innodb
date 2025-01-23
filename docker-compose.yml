@@ -118,6 +118,17 @@ services:
     networks:
       - mysql-cluster
 
+  dbt_container:
+    build: 
+      context: ./dbt_container 
+    depends_on:
+      - mysql-router  # Ensure router is running
+    networks:
+      - mysql-cluster
+    volumes:
+      - ./dbt_project:/src 
+    command: ["dbt", "run"]
+
   mysql-router:
     image: mysql/mysql-router:8.0
     container_name: mysql-router
@@ -155,3 +166,4 @@ volumes:
   mysql_data_1:
   mysql_data_2:
   mysql_data_3:
+  dbt_project: 

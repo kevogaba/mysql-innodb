@@ -1,0 +1,11 @@
+my_profile:
+  target: dev
+  outputs:
+    dev:
+      type: mysql
+      host: mysql-router  # Connect to the router
+      port: 6446         # Use the router's port
+      user: root
+      password: root
+      database: company_dw
+      schema: warehouse
