@@ -18,7 +18,7 @@ WITH win_counts AS (
     FROM
     (SELECT *
     FROM {{ ref('crm_int_kpi') }} a
-    LEFT JOIN dev_global_dim.dim_date b ON a.ts_close_date = b.date_actual) AS virtual_table
+    LEFT JOIN warehouse.dim_date b ON a.ts_close_date = b.date_actual) AS virtual_table
     GROUP BY product_name
     ORDER BY won_deals DESC )
 select product_name,

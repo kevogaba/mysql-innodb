@@ -24,6 +24,11 @@ clean-targets:         # directories to be removed by `dbt clean`
   - "dbt_packages"
 
 models:
-  models/:  # Replace with the actual path to your models directory
-    +pre-hook:
-        - "USE {{ target.schema }}"
+  crm_sales:
+    dim:  # Replace with the actual path to your models directory
+      +pre-hook:
+          - "USE {{ target.schema }}"
+    crm_sales_data:
+      final:
+        +pre-hook:
+            - "USE {{ target.schema }}"

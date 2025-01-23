@@ -58,6 +58,9 @@ models:
     description: "Fact model with high-level kpis"
     columns:
       - name: revenue
+      - name: opportunity_id
+        tests:
+          - unique
 
   
 

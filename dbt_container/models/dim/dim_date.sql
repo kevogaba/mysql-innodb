@@ -1,13 +1,11 @@
-{{ config(
-    materialized='table' 
-) }}
+
 
 WITH RECURSIVE DQ (datum) AS (
-  SELECT DATE '1970-01-01'
+  SELECT DATE '2016-01-01'
   UNION ALL
   SELECT DQ.datum + INTERVAL 1 DAY
   FROM DQ
-  WHERE DQ.datum < DATE '2025-01-23' -- Assuming today's date is 2025-01-23
+  WHERE DQ.datum < DATE '2018-01-01' 
 )
 
 SELECT
@@ -25,8 +23,9 @@ SELECT
     DATE_SUB(datum, INTERVAL (DAYOFWEEK(datum) - 7) DAY) AS last_day_of_week,
     DATE_SUB(datum, INTERVAL (DAY(datum) - 1) DAY) AS first_day_of_month,
     LAST_DAY(datum) AS last_day_of_month,
-    DATE_TRUNC(quarter, datum) AS first_day_of_quarter,
-    DATE_ADD(DATE_ADD(DATE_TRUNC(quarter, datum), INTERVAL 3 MONTH), INTERVAL -1 DAY) AS last_day_of_quarter, 
+    -- Corrected calculation for first_day_of_quarter
+    STR_TO_DATE(CONCAT(YEAR(datum), LPAD(QUARTER(datum) * 3 - 2, 2, '0'), '-01'), '%Y%m-%d') AS first_day_of_quarter, 
+    DATE_ADD(STR_TO_DATE(CONCAT(YEAR(datum), LPAD(QUARTER(datum) * 3, 2, '0'), '-01'), '%Y%m-%d'), INTERVAL -1 DAY) AS last_day_of_quarter, 
     DATE(CONCAT(YEAR(datum), '-01-01')) AS first_day_of_year,
     DATE(CONCAT(YEAR(datum), '-12-31')) AS last_day_of_year,
     DATE_FORMAT(datum, '%m%Y') AS mmyyyy,

@@ -1,18 +1,15 @@
-{{
-config(
-materialized = 'table'
-)
-}}
-
+{{ config(
+    materialized='table'
+) }}
 
 WITH quarterly_revenue AS (
     SELECT
-        date_trunc('quarter', ts_close_date) AS quarter,
+        DATE_FORMAT(ts_close_date, '%Y-%m-01') AS quarter, -- Calculate quarter start date
         SUM(revenue) AS total_revenue
     FROM
         {{ ref('crm_int_kpi') }}
     GROUP BY
-        date_trunc('quarter', ts_close_date)
+        DATE_FORMAT(ts_close_date, '%Y-%m-01') 
     ORDER BY
         quarter
 ),
