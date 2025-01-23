@@ -1,15 +1,13 @@
-{{ config(
-    materialized='table'
-) }}
+
 
 WITH quarterly_revenue AS (
     SELECT
-        DATE_FORMAT(ts_close_date, '%Y-%m-01') AS quarter, -- Calculate quarter start date
+        DATE_FORMAT(COALESCE(ts_close_date, '1970-01-01'), '%Y-%m-01') AS quarter, -- Handle NULL or empty strings
         SUM(revenue) AS total_revenue
     FROM
         {{ ref('crm_int_kpi') }}
     GROUP BY
-        DATE_FORMAT(ts_close_date, '%Y-%m-01') 
+        DATE_FORMAT(COALESCE(ts_close_date, '1970-01-01'), '%Y-%m-01') 
     ORDER BY
         quarter
 ),

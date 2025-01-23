@@ -157,6 +157,43 @@ services:
     volumes:
       - ./docker-data/router:/var/lib/mysqlrouter
 
+superset_db:
+    image: postgres:13
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: superset
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d superset"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    volumes:
+      - superset_db_data:/var/lib/postgresql/data
+
+    superset:
+      build:
+        context: ./superset
+        dockerfile: Dockerfile
+      environment:
+        SUPERSET_ADMIN: ${SUPERSET_ADMIN}
+        SUPERSET_PASSWORD: ${SUPERSET_PASSWORD}
+        SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        SUPERSET_CONFIG_PATH: /app/pythonpath/superset_config.py
+        SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@superset_db:5432/superset
+      ports:
+        - "8088:8088"
+      volumes:
+        - superset_home:/app/superset_home
+      command: /app/init_superset.sh
+      depends_on:
+        - superset_db
+
 
 networks:
   mysql-cluster:
